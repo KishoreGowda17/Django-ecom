@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="please-login-container">
+        <h1>Please Login</h1>
+        <p>You must be logged in to access this page.</p>
+        <a class="button" href="{% url 'login' %}">Go to Login</a>
+    </div>
+{% endblock %}

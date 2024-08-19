@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<link rel="stylesheet" href="{% static "css/cart.css" %}">
+    <h1 class="cart-title">Your Cart</h1>
+    <ul class="cart-item-list">
+        {% for item in cart_items %}
+            <li class="cart-item">
+                <img src="{{ item.product.img.url }}" alt="{{ item.product.name }}" class="cart-item-img">
+                <span class="cart-item-name">{{ item.product.name }}</span>
+                <span class="cart-item-quantity">Quantity: {{ item.quantity }}</span>
+                <span class="cart-item-price">Price: Rs {{ item.product.price }}</span>
+                <span class="cart-item-total">Total: Rs {{ item.total_price|floatformat:2 }}</span>
+                <form action="{% url 'remove_from_cart' item.id %}" method="post" class="cart-item-remove-form">
+                    {% csrf_token %}
+                    <button type="submit" class="remove-button">Remove</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+    <p class="grand-total">Grand Total: Rs {{ grand_total|floatformat:2 }}</p>
+    <a class="button proceed-to-checkout" href="{% url 'checkout' %}">Proceed to Checkout</a>
+{% endblock %}

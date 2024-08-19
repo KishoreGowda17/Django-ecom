@@ -1,0 +1,16 @@
+{% comment %} {% extends 'base.html' %} {% endcomment %}
+{% load static %}
+
+
+
+{% block content %}
+<link rel="stylesheet" href="{% static "css/signup.css" %}">
+
+<h2>Create an Account</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Sign Up</button>
+</form>
+<p>Already have an account? <a href="{% url 'login' %}">Log in</a></p>
+{% endblock %}
