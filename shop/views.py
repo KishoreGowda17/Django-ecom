@@ -6,7 +6,7 @@ from django.http import JsonResponse
 from django.db import models
 from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
-from django.views.decorators.http import require_POST
+# from django.views.decorators.http import require_POST
 
 def signup_view(request):
     if request.method == 'POST':
@@ -51,7 +51,7 @@ def cart_view(request):
 @login_required
 def remove_from_cart(request, cart_item_id):
     if request.method == 'POST':
-        # Get the cart item and delete it
+        
         cart_item = get_object_or_404(CartItem, id=cart_item_id)
         cart_item.delete()
         return redirect('cart')
@@ -69,7 +69,7 @@ def checkout_view(request):
             email=request.POST['email'],
         )
         order.save()
-        # Clear the user's cart
+       
         Cart.objects.filter(user=request.user).delete()
         return render(request, 'order_confirmation.html')
     return render(request, 'checkout.html')
@@ -87,7 +87,7 @@ def add_to_cart(request, product_id):
                 cart_item.quantity = 1
             cart_item.save()
 
-            # Return a JSON response with the updated cart item count
+            
             count = CartItem.objects.filter(cart=cart).aggregate(total=models.Sum('quantity'))['total'] or 0
             return JsonResponse({'status': 'success', 'cart_item_count': count})
         else:
@@ -97,8 +97,8 @@ def add_to_cart(request, product_id):
 def search_view(request):
     query = request.GET.get('q')
     if query:
-        results = Product.objects.filter(name__icontains=query)  # Adjust this to match your search logic
+        results = Product.objects.filter(name__icontains=query)  
     else:
-        results = Product.objects.none()  # Return an empty queryset if no query
+        results = Product.objects.none()  
 
     return render(request, 'search_results.html', {'results': results})

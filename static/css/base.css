@@ -44,7 +44,7 @@ h2 {
 .product-list {
   display: flex;
   flex-wrap: wrap;
-  justify-content: space-around;
+  justify-content: space-evenly;
   padding: 20px;
 }
 
@@ -57,7 +57,7 @@ h2 {
   text-align: center;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: space-evenly;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
   margin: 10px 0 10px 0;
 }

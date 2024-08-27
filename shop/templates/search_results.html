@@ -1,6 +1,8 @@
 {% extends 'base.html' %} {% block content %}
+{% load static %}
 <h1>Search Results</h1>
 {% if results %}
+<link rel="stylesheet" href="{% static "css/search_results.css" %}">
 <div class="search-results">
   {% for product in results %}
   <div class="search-result-item">
