@@ -1,83 +1,106 @@
 <!DOCTYPE html>
 {% load static %}
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>{% block title %}My E-Commerce Site{% endblock %}</title>
-    <link rel="stylesheet" href="{% static "css/base.css" %}">
-</head>
-<body>
+    <link rel="stylesheet" href="{% static "css/basE.css" %}">
+  </head>
+  <body>
     <nav>
-        <ul>
-            <li class="brand-name"><a href="{% url 'home' %}">SHOE SHOPZ</a></li>
-            <li>
-                <form action="{% url 'search' %}" method="get" class="search-form">
-                    <input type="text" name="q" placeholder="Search for products..." class="search-input">
-                    <button type="submit" class="search-button">🔍</button>
-                </form>
-            </li>
+      <div class="nav-container">
+        <div class="nav-left">
+          <span class="brand-name"
+            ><a class="home-btn" href="{% url 'home' %}">SHOE SHOPZ</a></span
+          >
 
-        
-            {% if user.is_authenticated %}
-                <li class='user-name'> 🙂 Hi, {{ user.username }}</li>
-                <li>
-                    <a href="{% url 'cart' %}">
-                        🛒<span id="cart-item-count">{{ cart_item_count }}</span>
-                    </a>
-                </li>
-                <li><a href="{% url 'logout' %}">Logout</a></li>
-            {% else %}
-                <li><a href="{% url 'login' %}">Login</a></li>
-                <li><a href="{% url 'signup' %}">Sign Up</a></li>
-            {% endif %}
-        </ul>
+          <span class="material-symbols-outlined"> </span>
+        </div>
+        <div class="nav-right">
+          <form action="{% url 'search' %}" method="get" class="search-form">
+            <input
+              type="text"
+              name="q"
+              placeholder="Search for products..."
+              class="search-input"
+            />
+            <button type="submit" class="search-button">🔍</button>
+          </form>
+          {% if user.is_authenticated %}
+          <span class="user-name"> Hello, {{ user.username }} </span>
+          <a href="{% url 'new_orders' %}" class="new-orders-link"
+            >New Orders</a
+          >
+          <a href="{% url 'cart' %}" class="cart-container">
+            🛒<span id="cart-item-count">{{ cart_item_count }}</span>
+          </a>
+          <a class="logout-btn" href="{% url 'logout' %}">Logout</a>
+          {% else %}
+          <a href="{% url 'login' %}">Login</a>
+          <a href="{% url 'signup' %}">Sign Up</a>
+          {% endif %}
+        </div>
+      </div>
     </nav>
-
     {% block content %}{% endblock %}
+    <script>
+      window.addEventListener("scroll", function () {
+        const nav = document.querySelector("nav");
+        if (window.scrollY > 50) {
+          // Change this value as needed
+          nav.classList.add("scrolled");
+        } else {
+          nav.classList.remove("scrolled");
+        }
+      });
+    </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelectorAll('.add-to-cart').forEach(button => {
-                button.addEventListener('click', function(event) {
-                    event.preventDefault();
-                    const productId = this.dataset.productId;
+      document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".add-to-cart").forEach((button) => {
+          button.addEventListener("click", function (event) {
+            event.preventDefault();
+            const productId = this.dataset.productId;
 
-                    fetch(`/add-to-cart/${productId}/`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRFToken': getCookie('csrftoken'),
-                        },
-                        body: JSON.stringify({ product_id: productId }),
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.status === 'success') {
-                            document.getElementById('cart-item-count').textContent = data.cart_item_count;
-                        } else {
-                            console.error(data.message);
-                        }
-                    })
-                    .catch(error => console.error('Error:', error));
-                });
-            });
-
-            function getCookie(name) {
-                let cookieValue = null;
-                if (document.cookie && document.cookie !== '') {
-                    const cookies = document.cookie.split(';');
-                    for (let i = 0; cookies.length; i++) {
-                        const cookie = cookies[i].trim();
-                        if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                            break;
-                        }
-                    }
+            fetch(`/add-to-cart/${productId}/`, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-CSRFToken": getCookie("csrftoken"),
+              },
+              body: JSON.stringify({ product_id: productId }),
+            })
+              .then((response) => response.json())
+              .then((data) => {
+                if (data.status === "success") {
+                  document.getElementById("cart-item-count").textContent =
+                    data.cart_item_count;
+                } else {
+                  console.error(data.message);
                 }
-                return cookieValue;
-            }
+              })
+              .catch((error) => console.error("Error:", error));
+          });
         });
+
+        function getCookie(name) {
+          let cookieValue = null;
+          if (document.cookie && document.cookie !== "") {
+            const cookies = document.cookie.split(";");
+            for (let i = 0; cookies.length; i++) {
+              const cookie = cookies[i].trim();
+              if (cookie.substring(0, name.length + 1) === name + "=") {
+                cookieValue = decodeURIComponent(
+                  cookie.substring(name.length + 1)
+                );
+                break;
+              }
+            }
+          }
+          return cookieValue;
+        }
+      });
     </script>
-</body>
+  </body>
 </html>

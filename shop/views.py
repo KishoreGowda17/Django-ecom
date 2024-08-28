@@ -1,85 +1,96 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.forms import UserCreationForm
-from .models import Product, Cart, Order,CartItem
+from .models import Product, Cart, Order, CartItem
 from django.http import JsonResponse
 from django.db import models
 from django.contrib.auth.decorators import login_required
+from .models import Order
 from django.db.models import Sum
+
 # from django.views.decorators.http import require_POST
 
+
 def signup_view(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = UserCreationForm(request.POST)
         if form.is_valid():
             form.save()
-            return redirect('login')
+            return redirect("login")
     else:
         form = UserCreationForm()
-    return render(request, 'signup.html', {'form': form})
+    return render(request, "signup.html", {"form": form})
+
 
 def login_view(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
+    if request.method == "POST":
+        username = request.POST["username"]
+        password = request.POST["password"]
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')
-    return render(request, 'login.html')
+            return redirect("home")
+    return render(request, "login.html")
+
 
 def logout_view(request):
     logout(request)
-    return redirect('login')
+    return redirect("login")
 
-@login_required(login_url='login')
+
+@login_required(login_url="login")
 def home_view(request):
     products = Product.objects.all()
-    return render(request, 'home.html', {'products': products})
+    return render(request, "home.html", {"products": products})
+
 
 def please_login_view(request):
-    return render(request, 'please_login.html')
+    return render(request, "please_login.html")
 
 
 def cart_view(request):
     cart_items = CartItem.objects.filter(cart__user=request.user)
     grand_total = sum(item.quantity * item.product.price for item in cart_items)
-    return render(request, 'cart.html', {
-        'cart_items': cart_items,
-        'grand_total': grand_total
-    })
+    return render(
+        request, "cart.html", {"cart_items": cart_items, "grand_total": grand_total}
+    )
+
+
 @login_required
 def remove_from_cart(request, cart_item_id):
-    if request.method == 'POST':
-        
+    if request.method == "POST":
+
         cart_item = get_object_or_404(CartItem, id=cart_item_id)
         cart_item.delete()
-        return redirect('cart')
+        return redirect("cart")
 
 
 def checkout_view(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         order = Order(
             user=request.user,
-            name=request.POST['name'],
-            address=request.POST['address'],
-            city=request.POST['city'],
-            state=request.POST['state'],
-            zip_code=request.POST['zip'],
-            email=request.POST['email'],
+            name=request.POST["name"],
+            address=request.POST["address"],
+            city=request.POST["city"],
+            state=request.POST["state"],
+            zip_code=request.POST["zip"],
+            email=request.POST["email"],
         )
         order.save()
-       
+
         Cart.objects.filter(user=request.user).delete()
-        return render(request, 'order_confirmation.html')
-    return render(request, 'checkout.html')
+        return render(request, "order_confirmation.html")
+    return render(request, "checkout.html")
+
 
 def add_to_cart(request, product_id):
-    if request.method == 'POST':
+    if request.method == "POST":
         product = get_object_or_404(Product, id=product_id)
         if request.user.is_authenticated:
             cart, created = Cart.objects.get_or_create(user=request.user)
-            cart_item, created = CartItem.objects.get_or_create(cart=cart, product=product)
+            cart_item, created = CartItem.objects.get_or_create(
+                cart=cart, product=product
+            )
 
             if not created:
                 cart_item.quantity += 1
@@ -87,18 +98,33 @@ def add_to_cart(request, product_id):
                 cart_item.quantity = 1
             cart_item.save()
 
-            
-            count = CartItem.objects.filter(cart=cart).aggregate(total=models.Sum('quantity'))['total'] or 0
-            return JsonResponse({'status': 'success', 'cart_item_count': count})
+            count = (
+                CartItem.objects.filter(cart=cart).aggregate(
+                    total=models.Sum("quantity")
+                )["total"]
+                or 0
+            )
+            return JsonResponse({"status": "success", "cart_item_count": count})
         else:
-            return JsonResponse({'status': 'error', 'message': 'User not authenticated'})
-    return JsonResponse({'status': 'error', 'message': 'Invalid request'})
+            return JsonResponse(
+                {"status": "error", "message": "User not authenticated"}
+            )
+    return JsonResponse({"status": "error", "message": "Invalid request"})
+
 
 def search_view(request):
-    query = request.GET.get('q')
+    query = request.GET.get("q")
     if query:
-        results = Product.objects.filter(name__icontains=query)  
+        results = Product.objects.filter(name__icontains=query)
     else:
-        results = Product.objects.none()  
+        results = Product.objects.none()
 
-    return render(request, 'search_results.html', {'results': results})
+    return render(request, "search_results.html", {"results": results})
+
+
+def new_orders(request):
+    if request.user.is_staff:  # Assuming only staff/admin can view orders
+        orders = Order.objects.all()  # Fetch all orders
+        return render(request, "new_orders.html", {"orders": orders})
+    else:
+        return redirect("home")  # Redirect if user is not authorized

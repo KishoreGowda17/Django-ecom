@@ -2,107 +2,10 @@
 {% load static %}
 {% block title %}Cart{% endblock %}
 {% block content %}
-    <style>
-        .cart-title {
-            font-size: 2em;
-            color: #333;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .cart-item-list {
-            list-style-type: none;
-            padding: 0;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        
-        .cart-item {
-            display: flex;
-            background-color: #fff;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            padding: 15px;
-            margin: 10px;
-            width: 90%;
-            max-width: 600px;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-        }
-        
-        .cart-item-details {
-            display: flex;
-            align-items: center;
-        }
-        
-        .cart-item-img {
-            max-width: 60px;
-            height: auto;
-            margin-right: 20px;
-        }
-        
-        .cart-item-name, 
-        .cart-item-quantity, 
-        .cart-item-price, 
-        .cart-item-total {
-            margin-right: 10px;
-            color: #555;
-            font-weight: bold;
-            text-align: center; /* Center-align text for consistent appearance */
-        }
-        
-        .cart-item-quantity, 
-        .cart-item-price, 
-        .cart-item-total {
-            font-size: 1rem;
-        }
-        
-        .cart-item-remove-form {
-            display: inline;
-        }
-        
-        .remove-button {
-            background-color: #dc3545;
-            color: #fff;
-            border: none;
-            padding: 5px 10px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        
-        .remove-button:hover {
-            background-color: #c82333;
-        }
-        
-        .grand-total {
-            font-size: 1.5em;
-            color: #333;
-            text-align: center;
-            margin-top: 20px;
-        }
-        
-        .proceed-to-checkout {
-            display: block;
-            width: fit-content;
-            margin: 20px auto;
-            background-color: #28a745;
-            color: #fff;
-            padding: 10px 20px;
-            text-align: center;
-            border-radius: 5px;
-            text-decoration: none;
-        }
-        
-        .proceed-to-checkout:hover {
-            background-color: #218838;
-        }
-        
-    </style>
+    <link rel="stylesheet" href="{% static "css/cartt.css" %}">
     <h1 class="cart-title">Your Cart</h1>
     <ul class="cart-item-list">
+        {% if cart_items %}
         {% for item in cart_items %}
             <li class="cart-item">
                 <img src="{{ item.product.img.url }}" alt="{{ item.product.name }}" class="cart-item-img">
@@ -116,6 +19,9 @@
                 </form>
             </li>
         {% endfor %}
+        {% else %}
+        <p class="empty-cart-message">Your cart is empty. Add some items to your cart to proceed to checkout.</p>
+        {% endif %}
     </ul>
     <p class="grand-total">Grand Total: Rs {{ grand_total|floatformat:2 }}</p>
     <a class="button proceed-to-checkout" href="{% url 'checkout' %}">Proceed to Checkout</a>

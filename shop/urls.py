@@ -11,7 +11,8 @@ from .views import (
     add_to_cart,
     remove_from_cart,
     search_view,
-    please_login_view
+    please_login_view,
+    new_orders,
 )
 
 urlpatterns = [
@@ -29,4 +30,5 @@ urlpatterns = [
     ),
     path('search/', search_view, name='search'),
     path('please-login/', please_login_view, name='please_login'),
+    path('new-orders/', new_orders, name='new_orders'),
 ]+ static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

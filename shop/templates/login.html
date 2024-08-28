@@ -1,10 +1,14 @@
-{% comment %} {% extends 'base.html' %} {% endcomment %}
 {% load static %}
-
-{% comment %} {% block title %}Log In{% endblock %} {% endcomment %}
 
 {% block content %}
 <link rel="stylesheet" href="{% static "css/login.css" %}">
+
+<!-- Introductory Message -->
+<div class="intro-message">
+    <h1>Shoe Shopz</h1>
+    <p>Welcome to Shoe Shopz! Please log in to continue.</p>
+</div>
+
 <h2>Log In</h2>
 <form method="post">
     {% csrf_token %}
@@ -19,4 +23,14 @@
     <button type="submit">Log In</button>
 </form>
 <p>Don't have an account? <a href="{% url 'signup' %}">Sign up</a></p>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const introMessage = document.querySelector('.intro-message');
+        if (introMessage) {
+            introMessage.classList.add('show');
+        }
+    });
+</script>
+
 {% endblock %}
